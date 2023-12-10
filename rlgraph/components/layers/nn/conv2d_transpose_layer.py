@@ -76,7 +76,7 @@ class Conv2DTransposeLayer(NNLayer):
 
         # Wrapper for backend.
         if get_backend() == "tf":
-            self.layer = tf.layers.Conv2DTranspose(
+            self.layer = tf.compat.v1.layers.Conv2DTranspose(
                 filters=self.filters,
                 kernel_size=self.kernel_size,
                 strides=self.strides,
@@ -85,9 +85,9 @@ class Conv2DTransposeLayer(NNLayer):
                 activation=get_activation_function(self.activation, *self.activation_params),
                 use_bias=(self.biases_spec is not False),
                 kernel_initializer=self.kernel_init.initializer,
-                bias_initializer=(self.biases_init.initializer or tf.zeros_initializer()),
+                bias_initializer=(self.biases_init.initializer or tf.compat.v1.zeros_initializer()),
                 trainable=(False if self.trainable is False else True),
-                _reuse=tf.AUTO_REUSE
+                _reuse=tf.compat.v1.AUTO_REUSE
             )
 
             # Now build the layer so that its variables get created.

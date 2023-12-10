@@ -128,7 +128,7 @@ class LSTMLayer(NNLayer):
                     forget_bias=self.forget_bias,
                     name="lstm-cell",
                     dtype=tf.float32,
-                    reuse=tf.AUTO_REUSE
+                    reuse=tf.compat.v1.AUTO_REUSE
                 )
             else:
                 self.lstm = tf.contrib.rnn.LSTMBlockCell(
@@ -137,7 +137,7 @@ class LSTMLayer(NNLayer):
                     cell_clip=self.cell_clip,
                     forget_bias=self.forget_bias,
                     name="lstm-cell",
-                    reuse=tf.AUTO_REUSE
+                    reuse=tf.compat.v1.AUTO_REUSE
                     # TODO: self.trainable needs to be recognized somewhere here.
                     # These are all not supported yet for LSTMBlockCell (only for the slower LSTMCell)
                     # initializer=self.weights_init.initializer,
@@ -179,13 +179,13 @@ class LSTMLayer(NNLayer):
         if get_backend() == "tf":
             # Convert to tf's LSTMStateTuple from DataOpTuple.
             if initial_c_and_h_states is not None:
-                initial_c_and_h_states = tf.nn.rnn_cell.LSTMStateTuple(
+                initial_c_and_h_states = tf.compat.v1.nn.rnn_cell.LSTMStateTuple(
                     initial_c_and_h_states[0], initial_c_and_h_states[1]
                 )
 
             # We are running the LSTM as a dynamic while-loop.
             if self.static_loop is False:
-                lstm_out, lstm_state_tuple = tf.nn.dynamic_rnn(
+                lstm_out, lstm_state_tuple = tf.compat.v1.nn.dynamic_rnn(
                     cell=self.lstm,
                     inputs=inputs,
                     sequence_length=sequence_length,
@@ -200,7 +200,7 @@ class LSTMLayer(NNLayer):
                 # Set to zeros as tf lstm object does not handle None.
                 if initial_c_and_h_states is None:
                     shape = (tf.shape(inputs)[0 if self.time_major is False else 1], self.units)
-                    initial_c_and_h_states = tf.nn.rnn_cell.LSTMStateTuple(
+                    initial_c_and_h_states = tf.compat.v1.nn.rnn_cell.LSTMStateTuple(
                         tf.zeros(shape=shape, dtype=tf.float32),
                         tf.zeros(shape=shape, dtype=tf.float32)
                     )

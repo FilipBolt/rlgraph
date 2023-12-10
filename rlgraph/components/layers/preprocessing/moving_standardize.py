@@ -64,14 +64,14 @@ class MovingStandardize(PreprocessLayer):
                 shape=self.in_shape,
                 dtype=tf.float32,
                 trainable=False,
-                initializer=tf.zeros_initializer()
+                initializer=tf.compat.v1.zeros_initializer()
             )
             self.std_sum_est = self.get_variable(
                 name="std-sum-est",
                 shape= self.in_shape,
                 dtype=tf.float32,
                 trainable=False,
-                initializer=tf.zeros_initializer()
+                initializer=tf.compat.v1.zeros_initializer()
             )
 
     @rlgraph_api
@@ -81,7 +81,7 @@ class MovingStandardize(PreprocessLayer):
             self.mean_est = np.zeros(self.in_shape)
             self.std_sum_est = np.zeros(self.in_shape)
         elif get_backend() == "tf":
-            return tf.variables_initializer([self.sample_count, self.mean_est, self.std_sum_est])
+            return tf.compat.v1.variables_initializer([self.sample_count, self.mean_est, self.std_sum_est])
 
     @rlgraph_api
     def _graph_fn_call(self, inputs):
@@ -112,7 +112,7 @@ class MovingStandardize(PreprocessLayer):
             return standardized
 
         elif get_backend() == "tf":
-            assignments = [tf.assign_add(ref=self.sample_count, value=1.0)]
+            assignments = [tf.compat.v1.assign_add(ref=self.sample_count, value=1.0)]
             with tf.control_dependencies(assignments):
                 # 1. Update vars
                 assignments = []
@@ -123,8 +123,8 @@ class MovingStandardize(PreprocessLayer):
                     true_fn=lambda: update
                 )
                 var_update = update * update * (self.sample_count - 1) / self.sample_count
-                assignments.append(tf.assign_add(ref=self.mean_est, value=mean_update))
-                assignments.append(tf.assign_add(ref=self.std_sum_est, value=var_update))
+                assignments.append(tf.compat.v1.assign_add(ref=self.mean_est, value=mean_update))
+                assignments.append(tf.compat.v1.assign_add(ref=self.std_sum_est, value=var_update))
 
             with tf.control_dependencies(assignments):
                 # 2. Compute var estimate after update.

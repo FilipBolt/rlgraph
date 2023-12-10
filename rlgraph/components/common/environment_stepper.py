@@ -30,7 +30,12 @@ from rlgraph.utils.specifiable_server import SpecifiableServer
 
 if get_backend() == "tf":
     import tensorflow as tf
-    nest = tf.contrib.framework.nest
+    import tree
+
+    nest = tree
+    
+    # nest = tf.python.util.nest
+    # nest = tf.contrib.framework.nest
 
 
 class EnvironmentStepper(Component):
@@ -213,7 +218,7 @@ class EnvironmentStepper(Component):
                     for _ in range(1 if self.has_rnn is False else 2):
                         expanded = tf.expand_dims(input=expanded, axis=0)
                     # Make None so it'll be recognized as batch-rank by the auto-Space detector.
-                    flat_state[flat_key] = tf.placeholder_with_default(
+                    flat_state[flat_key] = tf.compat.v1.placeholder_with_default(
                         input=expanded, shape=(None,) + ((None,) if self.has_rnn is True else ()) +
                                               self.state_space_actor_list[i].shape
                     )
@@ -280,7 +285,7 @@ class EnvironmentStepper(Component):
             # Append internal states if needed.
             if self.current_internal_states is not None:
                 initializer.append(tuple(
-                    tf.placeholder_with_default(
+                    tf.compat.v1.placeholder_with_default(
                         internal_s.read_value(), shape=(None,) + tuple(internal_s.shape.as_list()[1:])
                     ) for internal_s in self.current_internal_states.values()
                 ))
@@ -293,7 +298,7 @@ class EnvironmentStepper(Component):
             ))
 
             # Assign all values that need to be passed again into the next scan.
-            assigns = [tf.assign_add(self.time_step, self.num_steps)]  # time step
+            assigns = [tf.compat.v1.assign_add(self.time_step, self.num_steps)]  # time step
             # State (or flattened state components).
             for flat_key, var_ref, state_comp in zip(
                     self.state_space_actor_flattened.keys(), self.current_state.values(), step_results[1]

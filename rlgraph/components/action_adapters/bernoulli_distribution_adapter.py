@@ -44,7 +44,7 @@ class BernoulliDistributionAdapter(ActionAdapter):
             probs = tf.nn.sigmoid(parameters)
             probs._batch_rank = 0
             # Log probs.
-            log_probs = tf.log(x=probs)
+            log_probs = tf.math.log(x=probs)
             log_probs._batch_rank = 0
 
         elif get_backend() == "pytorch":

@@ -136,13 +136,13 @@ class Exploration(Component):
             if use_exploration is False:
                 return sample
             else:
-                random_actions = tf.random_uniform(
+                random_actions = tf.random.uniform(
                     shape=tf.shape(sample),
                     maxval=self.flat_action_space[key].num_categories,
                     dtype=convert_dtype("int")
                 )
 
-                return tf.where(
+                return tf.compat.v1.where(
                     # `use_exploration` given as actual bool or as tensor?
                     condition=epsilon_decisions if use_exploration is True else tf.logical_and(
                         use_exploration, epsilon_decisions

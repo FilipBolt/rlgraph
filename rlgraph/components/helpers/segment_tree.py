@@ -76,13 +76,13 @@ class SegmentTree(object):
         element_updates = element_updates.write(index=0, value=element)
 
         # Search and update values while index >=1
-        loop_update_index = tf.div(x=index, y=2)
+        loop_update_index = tf.compat.v1.div(x=index, y=2)
 
         def insert_body(loop_update_index, index_updates, element_updates, call_index):
             # This is the index we just updated.
             prev_index = index_updates.read(call_index - 1)
             prev_val = element_updates.read(call_index - 1)
-            update_val = tf.where(
+            update_val = tf.compat.v1.where(
                 condition=tf.greater(x=prev_index % 2, y=0),
                 # Previous index was odd because of loop init -> 2 * index + 1 is in element_updates,
                 # 2 * index is in variable values
@@ -96,7 +96,7 @@ class SegmentTree(object):
             index_updates = index_updates.write(call_index, loop_update_index)
             element_updates = element_updates.write(call_index, update_val)
 
-            return tf.div(x=loop_update_index, y=2), index_updates, element_updates, call_index + 1
+            return tf.compat.v1.div(x=loop_update_index, y=2), index_updates, element_updates, call_index + 1
 
         def cond(loop_update_index, index_updates, element_updates, call_index):
             return loop_update_index >= 1
@@ -112,7 +112,7 @@ class SegmentTree(object):
         indices = index_updates.stack()
         updates = element_updates.stack()
 
-        assignment = tf.scatter_update(ref=self.values, indices=indices, updates=updates)
+        assignment = tf.compat.v1.scatter_update(ref=self.values, indices=indices, updates=updates)
 
         with tf.control_dependencies(control_inputs=[assignment]):
             return tf.no_op()
@@ -207,7 +207,7 @@ class SegmentTree(object):
         limit += self.capacity
 
         def reduce_body(start, limit, result):
-            start_mod = tf.mod(x=start, y=2)
+            start_mod = tf.math.floormod(x=start, y=2)
 
             def update_start_fn(start, result):
                 result = reduce_op(x=result, y=self.values[start])
@@ -220,7 +220,7 @@ class SegmentTree(object):
                 false_fn=lambda: update_start_fn(start, result)
             )
 
-            end_mod = tf.mod(x=limit, y=2)
+            end_mod = tf.math.floormod(x=limit, y=2)
 
             def update_limit_fn(limit, result):
                 limit -= 1
@@ -232,7 +232,7 @@ class SegmentTree(object):
                 true_fn=lambda: (limit, result),
                 false_fn=lambda: update_limit_fn(limit, result)
             )
-            return tf.div(x=start, y=2), tf.div(x=limit, y=2), result
+            return tf.compat.v1.div(x=start, y=2), tf.compat.v1.div(x=limit, y=2), result
 
         def cond(start, limit, result):
             return start < limit

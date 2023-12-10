@@ -91,4 +91,8 @@ class ConcatLayer(NNLayer):
                 concat_output._time_rank = 0 if self.time_major is True else 1
             return concat_output
         elif get_backend() == "pytorch":
-            return torch.cat(force_list(inputs))
+            try:
+                return torch.cat(force_list(inputs), dim=self.axis)
+            except:
+                return torch.cat(inputs, dim=self.axis)
+                import pdb; pdb.set_trace()

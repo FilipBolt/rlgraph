@@ -59,7 +59,7 @@ class Sampler(Component):
         batch_size = get_batch_size(next(iter(inputs.values())))
 
         if get_backend() == "tf":
-            sample_indices = tf.random_uniform(
+            sample_indices = tf.random.uniform(
                 shape=(sample_size,),
                 maxval=batch_size,
                 dtype=tf.int32

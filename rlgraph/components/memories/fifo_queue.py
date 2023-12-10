@@ -88,7 +88,7 @@ class FIFOQueue(Memory):
             else:
                 shared_name = self.global_scope
 
-            self.queue = tf.FIFOQueue(
+            self.queue = tf.queue.FIFOQueue(
                 capacity=self.capacity,
                 dtypes=dtypes,
                 shapes=shapes,

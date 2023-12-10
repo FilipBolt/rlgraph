@@ -117,7 +117,7 @@ class Component(Specifiable):
         self.space_agnostic = kwargs.pop("space_agnostic", None)
         self.nesting_level = kwargs.pop("nesting_level", None)
 
-        assert not kwargs, "ERROR: kwargs ({}) still contains items!".format(kwargs)
+        # assert not kwargs, "ERROR: kwargs ({}) still contains items!".format(kwargs)
 
         # Keep track of whether this Component has already been added to another Component and throw error
         # if this is done twice. Each Component can only be added once to a parent Component.
@@ -363,17 +363,17 @@ class Component(Specifiable):
             if device is not None:
                 with tf.device(device):
                     if self.reuse_variable_scope:
-                        with tf.variable_scope(name_or_scope=self.reuse_variable_scope, reuse=tf.AUTO_REUSE):
+                        with tf.compat.v1.variable_scope(name_or_scope=self.reuse_variable_scope, reuse=tf.compat.v1.AUTO_REUSE):
                             self.create_variables(input_spaces, action_space)
                     else:
-                        with tf.variable_scope(self.global_scope):
+                        with tf.compat.v1.variable_scope(self.global_scope):
                             self.create_variables(input_spaces, action_space)
             else:
                 if self.reuse_variable_scope:
-                    with tf.variable_scope(name_or_scope=self.reuse_variable_scope, reuse=tf.AUTO_REUSE):
+                    with tf.compat.v1.variable_scope(name_or_scope=self.reuse_variable_scope, reuse=tf.compat.v1.AUTO_REUSE):
                         self.create_variables(input_spaces, action_space)
                 else:
-                    with tf.variable_scope(self.global_scope):
+                    with tf.compat.v1.variable_scope(self.global_scope):
                         self.create_variables(input_spaces, action_space)
 
         elif get_backend() == "pytorch":
@@ -556,11 +556,16 @@ class Component(Specifiable):
             # Numpyize initializer and give it correct dtype.
             else:
                 shape = None
+                # try:
                 initializer = np.asarray(initializer, dtype=util.convert_dtype(dtype, "np"))
+                print(initializer, dtype)
+                # except:
+                #     import pdb; pdb.set_trace()
 
-            var = tf.get_variable(
+
+            var = tf.compat.v1.get_variable(
                 name=name, shape=shape, dtype=util.convert_dtype(dtype), initializer=initializer, trainable=trainable,
-                collections=[tf.GraphKeys.GLOBAL_VARIABLES if local is False else tf.GraphKeys.LOCAL_VARIABLES],
+                collections=[tf.compat.v1.GraphKeys.GLOBAL_VARIABLES if local is False else tf.compat.v1.GraphKeys.LOCAL_VARIABLES],
                 use_resource=use_resource
             )
         elif get_backend() == "tf-eager":
@@ -571,7 +576,7 @@ class Component(Specifiable):
 
             var = eager.Variable(
                 name=name, shape=shape, dtype=util.convert_dtype(dtype), initializer=initializer, trainable=trainable,
-                collections=[tf.GraphKeys.GLOBAL_VARIABLES if local is False else tf.GraphKeys.LOCAL_VARIABLES]
+                collections=[tf.compat.v1.GraphKeys.GLOBAL_VARIABLES if local is False else tf.compat.v1.GraphKeys.LOCAL_VARIABLES]
             )
 
         # TODO: what about python variables?
@@ -597,7 +602,7 @@ class Component(Specifiable):
         # TODO can we hide this tf.variable_scope somewhere?
         if get_backend() == "tf":
             if self.reuse_variable_scope is not None:
-                with tf.variable_scope(name_or_scope=self.reuse_variable_scope, reuse=True):
+                with tf.compat.v1.variable_scope(name_or_scope=self.reuse_variable_scope, reuse=True):
                     if flatten:
                         return from_space.flatten(mapping=lambda key_, primitive: primitive.get_variable(
                             name=name + key_, add_batch_rank=add_batch_rank, add_time_rank=add_time_rank,
@@ -662,7 +667,7 @@ class Component(Specifiable):
             dict: A dict mapping variable names to their get_backend variables.
         """
         if get_backend() == "tf":
-            collections = kwargs.pop("collections", None) or tf.GraphKeys.GLOBAL_VARIABLES
+            collections = kwargs.pop("collections", None) or tf.compat.v1.GraphKeys.GLOBAL_VARIABLES
             custom_scope_separator = kwargs.pop("custom_scope_separator", "/")
             global_scope = kwargs.pop("global_scope", True)
             assert not kwargs, "{}".format(kwargs)
@@ -672,7 +677,7 @@ class Component(Specifiable):
             names = util.force_list(names)
             # Return all variables of this Component (for some collection).
             if len(names) == 0:
-                collection_variables = tf.get_collection(collections)
+                collection_variables = tf.compat.v1.get_collection(collections)
                 ret = {}
                 for v in collection_variables:
                     lookup = re.sub(r':\d+$', "", v.name)
@@ -1182,7 +1187,7 @@ class Component(Specifiable):
             Optional[op]: The graph operation representing the update (or None).
         """
         if get_backend() == "tf":
-            return tf.scatter_update(ref=variable, indices=indices, updates=updates)
+            return tf.compat.v1.scatter_update(ref=variable, indices=indices, updates=updates)
 
     @staticmethod
     def assign_variable(ref, value):
@@ -1199,9 +1204,9 @@ class Component(Specifiable):
         if get_backend() == "tf":
             tensor_type = type(value).__name__
             if tensor_type == "Variable" or tensor_type == "RefVariable":
-                return tf.assign(ref=ref, value=value.read_value())
+                return tf.compat.v1.assign(ref=ref, value=value.read_value())
             else:
-                return tf.assign(ref=ref, value=value)
+                return tf.compat.v1.assign(ref=ref, value=value)
         elif get_backend() == "pytorch":
             ref.set_value(value)
 

@@ -783,7 +783,7 @@ class SingleIMPALAAgent(IMPALAAgent):
         # TODO: Move this into generic AgentRootComponent.
         @graph_fn(component=self.root_component)
         def _graph_fn_training_step(root, other_step_op=None):
-            add_op = tf.assign_add(self.graph_executor.global_training_timestep, 1)
+            add_op = tf.compat.v1.assign_add(self.graph_executor.global_training_timestep, 1)
             op_list = [add_op] + [other_step_op] if other_step_op is not None else []
             with tf.control_dependencies(op_list):
                 return tf.no_op() if other_step_op is None else other_step_op

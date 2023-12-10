@@ -84,7 +84,7 @@ class GaussianNoise(NoiseComponent):
     @rlgraph_api
     def _graph_fn_get_noise(self):
         if get_backend() == "tf":
-            return tf.random_normal(
+            return tf.random.normal(
                 shape=(1,) + self.action_space.shape,
                 mean=self.mean,
                 stddev=self.stddev,
@@ -127,8 +127,8 @@ class OrnsteinUhlenbeckNoise(NoiseComponent):
     def _graph_fn_get_noise(self):
         drift = self.theta * (self.mu - self.ou_state)
         if get_backend() == "tf":
-            diffusion = self.sigma * tf.random_normal(
+            diffusion = self.sigma * tf.random.normal(
                 shape=self.action_space.shape, dtype=convert_dtype(self.action_space.dtype)
             )
             delta = drift + diffusion
-            return tf.assign_add(ref=self.ou_state, value=delta)
+            return tf.compat.v1.assign_add(ref=self.ou_state, value=delta)

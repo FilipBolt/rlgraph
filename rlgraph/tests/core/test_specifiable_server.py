@@ -59,7 +59,7 @@ class TestSpecifiableServer(unittest.TestCase):
         self.assertEqual(ret2[2].dtype, convert_dtype("bool"))
 
         # Start the session and run the op, then check its actual values.
-        with tf.train.SingularMonitoredSession(hooks=[SpecifiableServerHook()]) as sess:
+        with tf.compat.v1.train.SingularMonitoredSession(hooks=[SpecifiableServerHook()]) as sess:
             out1 = sess.run(ret1)
             out2 = sess.run(ret2)
 

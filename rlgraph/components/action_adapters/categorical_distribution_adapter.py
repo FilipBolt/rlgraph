@@ -59,7 +59,7 @@ class CategoricalDistributionAdapter(ActionAdapter):
             probs = tf.maximum(x=tf.nn.softmax(logits=parameters, axis=-1), y=SMALL_NUMBER)
             probs._batch_rank = 0
             # Log probs.
-            log_probs = tf.log(x=probs)
+            log_probs = tf.math.log(x=probs)
             log_probs._batch_rank = 0
 
         elif get_backend() == "pytorch":

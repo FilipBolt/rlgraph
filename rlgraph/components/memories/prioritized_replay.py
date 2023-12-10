@@ -88,7 +88,7 @@ class PrioritizedReplay(Memory):
                 shape=(2 * self.priority_capacity,),
                 dtype=tf.float32,
                 trainable=False,
-                initializer=tf.zeros_initializer()
+                initializer=tf.compat.v1.zeros_initializer()
         )
         self.sum_segment_tree = SegmentTree(self.sum_segment_buffer, self.priority_capacity)
 
@@ -99,7 +99,7 @@ class PrioritizedReplay(Memory):
                 trainable=False,
                 # Neutral element of min()
                 shape=(2 * self.priority_capacity,),
-                initializer=tf.constant_initializer(np.full((2 * self.priority_capacity,), float('inf')))
+                initializer=tf.compat.v1.constant_initializer(np.full((2 * self.priority_capacity,), float('inf')))
         )
         self.min_segment_tree = SegmentTree(self.min_segment_buffer, self.priority_capacity)
 
@@ -161,7 +161,7 @@ class PrioritizedReplay(Memory):
         stored_elements_prob_sum = self.sum_segment_tree.reduce(start=0, limit=current_size - 1)
 
         # Sample the entire batch.
-        sample = stored_elements_prob_sum * tf.random_uniform(shape=(num_records, ))
+        sample = stored_elements_prob_sum * tf.random.uniform(shape=(num_records, ))
 
         # Sample by looking up prefix sum.
         sample_indices = tf.map_fn(fn=self.sum_segment_tree.index_of_prefixsum, elems=sample, dtype=tf.int32)

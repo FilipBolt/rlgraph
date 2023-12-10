@@ -193,7 +193,7 @@ class BoxSpace(Space):
             # TODO: re-evaluate the cutting of a leading '/_?' (tf doesn't like it)
             name = re.sub(r'^/_?', "", name)
             if is_input_feed:
-                variable = tf.placeholder(dtype=convert_dtype(self.dtype), shape=shape, name=name)
+                variable = tf.compat.v1.placeholder(dtype=convert_dtype(self.dtype), shape=shape, name=name)
                 if self.has_batch_rank:
                     variable._batch_rank = self.has_batch_rank
                 if self.has_time_rank:
@@ -209,9 +209,9 @@ class BoxSpace(Space):
                 else:
                     initializer = Initializer.from_spec(shape=shape, specification=init_spec).initializer
 
-                variable = tf.get_variable(
+                variable = tf.compat.v1.get_variable(
                     name, shape=shape, dtype=convert_dtype(self.dtype), initializer=initializer,
-                    collections=[tf.GraphKeys.GLOBAL_VARIABLES if local is False else tf.GraphKeys.LOCAL_VARIABLES],
+                    collections=[tf.compat.v1.GraphKeys.GLOBAL_VARIABLES if local is False else tf.compat.v1.GraphKeys.LOCAL_VARIABLES],
                     **kwargs
                 )
             # Add batch/time rank flags to the op.

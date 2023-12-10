@@ -155,7 +155,7 @@ class SpecifiableServer(Specifiable):
                             print("ERROR: Sent={} Exception={}".format(call_args, e))
                             raise
 
-                results = tf.py_func(py_call, (method_name,) + tuple(args), dtypes, name=method_name)
+                results = tf.compat.v1.py_func(py_call, (method_name,) + tuple(args), dtypes, name=method_name)
 
                 # Force known shapes on the returned tensors.
                 for i, (result, shape) in enumerate(zip(results, shapes)):
@@ -237,7 +237,7 @@ class SpecifiableServer(Specifiable):
 
 
 if get_backend() == "tf":
-    class SpecifiableServerHook(tf.train.SessionRunHook):
+    class SpecifiableServerHook(tf.estimator.SessionRunHook):
         """
         A hook for a tf.MonitoredSession that takes care of automatically starting and stopping
         SpecifiableServer objects.
@@ -254,7 +254,7 @@ if get_backend() == "tf":
 
             tp.close()
             tp.join()
-            tf.logging.info('Started all server hooks.')
+            tf.compat.v1.logging.info('Started all server hooks.')
 
             # Erase all SpecifiableServers as we open the Session (after having started all of them),
             # so new ones can get registered.

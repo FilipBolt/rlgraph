@@ -165,7 +165,7 @@ class ImageResize(PreprocessLayer):
 
             return resized
         elif get_backend() == "tf":
-            return tf.image.resize_images(
+            return tf.image.resize(
                 images=inputs, size=(self.width, self.height), method=self.tf_interpolation
             )
 

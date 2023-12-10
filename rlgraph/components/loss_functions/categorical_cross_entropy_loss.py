@@ -82,7 +82,7 @@ class CategoricalCrossEntropyLoss(SupervisedLossFunction):
             if self.sparse is True:
                 cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=labels, logits=parameters)
             else:
-                cross_entropy = tf.nn.softmax_cross_entropy_with_logits_v2(labels=labels, logits=parameters)
+                cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=labels, logits=parameters)
 
             # TODO: Make it possible to customize the time-step decay (or increase?) behavior.
             # Weight over time-steps (linearly decay weighting over time rank, cutting out entirely values past the
@@ -92,7 +92,7 @@ class CategoricalCrossEntropyLoss(SupervisedLossFunction):
                 if self.with_kl_regularizer is True:
                     uniform_probs = tf.fill(tf.shape(parameters), 1.0 / float(parameters.shape.as_list()[-1]))
                     # Subtract KL-divergence from loss term such that
-                    kl = - tf.reduce_sum(uniform_probs * tf.log((tf.maximum(parameters, SMALL_NUMBER)) / uniform_probs), axis=-1)
+                    kl = - tf.reduce_sum(uniform_probs * tf.math.log((tf.maximum(parameters, SMALL_NUMBER)) / uniform_probs), axis=-1)
                     cross_entropy += kl
 
                 max_time_steps = tf.cast(tf.shape(labels)[time_rank], dtype=tf.float32)

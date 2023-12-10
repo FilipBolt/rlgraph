@@ -51,7 +51,7 @@ class BetaDistributionAdapter(ActionAdapter):
             parameters = tf.clip_by_value(
                 adapter_outputs, clip_value_min=log(SMALL_NUMBER), clip_value_max=-log(SMALL_NUMBER)
             )
-            parameters = tf.log((tf.exp(parameters) + 1.0)) + 1.0
+            parameters = tf.math.log((tf.exp(parameters) + 1.0)) + 1.0
             alpha, beta = tf.split(parameters, num_or_size_splits=2, axis=-1)
 
             # If action_space is 0D, we have to squeeze the params by 1 dim to make them match our action_space.

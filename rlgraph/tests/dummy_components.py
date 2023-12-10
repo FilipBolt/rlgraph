@@ -317,7 +317,7 @@ class DummyWithOptimizer(SimpleDummyWithVar):
     def _graph_fn_simple_square_loss(self):
         loss = None
         if get_backend() == "tf":
-            loss = tf.square(x=tf.log(self.variable))
+            loss = tf.square(x=tf.math.log(self.variable))
         return loss
 
 

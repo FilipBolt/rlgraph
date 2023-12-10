@@ -53,6 +53,6 @@ class SoftMax(Component):
             # Translate logits into probabilities in a save way (SMALL_NUMBER trick).
             probabilities = tf.maximum(x=tf.nn.softmax(logits=logits, axis=-1), y=SMALL_NUMBER)
             # Log probs.
-            log_probs = tf.log(x=probabilities)
+            log_probs = tf.math.log(x=probabilities)
 
             return probabilities, log_probs

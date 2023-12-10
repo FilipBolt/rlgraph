@@ -34,7 +34,10 @@ if get_backend() == "tf":
         except:
             pass
 
-    nest = tf.contrib.framework.nest
+    import tree
+    nest = tree
+    # nest = tf.contrib.framework.nest
+
 
 
 class Batcher(object):
@@ -153,7 +156,7 @@ def batch_fn_with_options(minimum_batch_size=1, maximum_batch_size=1024, timeout
                     # Insert results back into batcher.
                     set_op = batcher[0].set_outputs(flat_result, computation_id)
 
-                    tf.train.add_queue_runner(tf.train.QueueRunner(batcher[0], [set_op]))
+                    tf.compat.v1.train.add_queue_runner(tf.compat.v1.train.QueueRunner(batcher[0], [set_op]))
 
             # Insert inputs into input queue.
             flat_result = batcher[0].compute(

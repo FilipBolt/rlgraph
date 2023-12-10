@@ -32,14 +32,14 @@ if get_backend() == "tf":
         def getter(getter, *args, **kwargs):
             var_collections = kwargs.get('collections', None)
             if var_collections is None:
-                var_collections = [tf.GraphKeys.GLOBAL_VARIABLES]
-            if tf.GraphKeys.GLOBAL_VARIABLES in var_collections:
+                var_collections = [tf.compat.v1.GraphKeys.GLOBAL_VARIABLES]
+            if tf.compat.v1.GraphKeys.GLOBAL_VARIABLES in var_collections:
                 with tf.device(device):
                     return getter(*args, **kwargs)
             else:
                 return getter(*args, **kwargs)
 
-        with tf.variable_scope('', custom_getter=getter) as vs:
+        with tf.compat.v1.variable_scope('', custom_getter=getter) as vs:
             yield vs
 
 

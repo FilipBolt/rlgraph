@@ -84,10 +84,10 @@ class SquashedNormal(Distribution):
         log_prob = distribution.log_prob(value=unsquashed_values)
         if get_backend() == "tf":
             unsquashed_values_tanhd = tf.tanh(unsquashed_values)
-            log_prob -= tf.reduce_sum(tf.log(1 - unsquashed_values_tanhd ** 2 + SMALL_NUMBER), axis=-1, keepdims=True)
+            log_prob -= tf.reduce_sum(tf.math.log(1 - unsquashed_values_tanhd ** 2 + SMALL_NUMBER), axis=-1, keepdims=True)
         elif get_backend() == "pytorch":
             unsquashed_values_tanhd = torch.tanh(unsquashed_values)
-            log_prob -= torch.sum(tf.log(1 - unsquashed_values_tanhd ** 2 + SMALL_NUMBER), axis=-1, keepdims=True)
+            log_prob -= torch.sum(tf.math.log(1 - unsquashed_values_tanhd ** 2 + SMALL_NUMBER), axis=-1, keepdims=True)
         return log_prob
 
     @graph_fn
@@ -113,7 +113,7 @@ class SquashedNormal(Distribution):
             )
             action = tf.tanh(raw_action)
             log_prob = distribution.log_prob(raw_action)
-            log_prob -= tf.reduce_sum(tf.log(1 - action ** 2 + SMALL_NUMBER), axis=-1, keepdims=True)
+            log_prob -= tf.reduce_sum(tf.math.log(1 - action ** 2 + SMALL_NUMBER), axis=-1, keepdims=True)
 
         elif get_backend() == "pytorch":
             if deterministic:

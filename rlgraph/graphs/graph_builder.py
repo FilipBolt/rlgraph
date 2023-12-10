@@ -419,7 +419,7 @@ class GraphBuilder(Specifiable):
                 # Assign proper device to all ops created in this context manager.
                 with tf.device(device):
                     # Name ops correctly according to our Component hierarchy.
-                    with tf.name_scope(op_rec_column.component.global_scope +
+                    with tf.compat.v1.name_scope(op_rec_column.component.global_scope +
                                        ('/' if op_rec_column.component.global_scope else "")):
                         self.logger.info(
                             "Assigning device '{}' to graph_fn '{}' (scope '{}').".
@@ -431,7 +431,7 @@ class GraphBuilder(Specifiable):
                         op_rec_column.out_graph_fn_column = out_op_rec_column
             else:
                 # Name ops correctly according to our Component hierarchy.
-                with tf.name_scope(op_rec_column.component.global_scope +
+                with tf.compat.v1.name_scope(op_rec_column.component.global_scope +
                                    ('/' if op_rec_column.component.global_scope else "")):
                     out_op_rec_column = self.run_through_graph_fn(
                         op_rec_column, create_new_out_column=create_new_out_column
@@ -667,7 +667,7 @@ class GraphBuilder(Specifiable):
         """
         num_trainable_parameters = 0
         if get_backend() == "tf":
-            for variable in tf.trainable_variables():
+            for variable in tf.compat.v1.trainable_variables():
                 num_trainable_parameters += get_shape(variable, flat=True)
 
         return num_trainable_parameters
@@ -681,7 +681,7 @@ class GraphBuilder(Specifiable):
             int: The number of backend-specific ops in the graph.
         """
         if get_backend() == "tf":
-            return len(tf.get_default_graph().as_graph_def().node)
+            return len(tf.compat.v1.get_default_graph().as_graph_def().node)
         return 0
 
     def sanity_check_build(self, still_building=False):
@@ -895,6 +895,7 @@ class GraphBuilder(Specifiable):
 
             for i, param in enumerate(params):
                 if param is None:
+                    import pdb; pdb.set_trace()
                     assert len(self.api[api_method_name][0]) == i, \
                         "ERROR: More input params given ({}) than expected ({}) for call to '{}'!". \
                         format(len(params), len(self.api[api_method_name][0]), api_method_name)

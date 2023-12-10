@@ -152,14 +152,14 @@ class IMPALALossFunction(LossFunction):
                 actions_flat = tf.one_hot(actions, depth=self.action_space.num_categories)
 
             # Discounts are simply 0.0, if there is a terminal, otherwise: `self.discount`.
-            discounts = tf.expand_dims(tf.to_float(~terminals) * self.discount, axis=-1, name="discounts")
+            discounts = tf.expand_dims(tf.cast(~terminals, dtype=tf.float32) * self.discount, axis=-1, name="discounts")
             # `clamp_one`: Clamp rewards between -1.0 and 1.0.
             if self.reward_clipping == "clamp_one":
                 rewards = tf.clip_by_value(rewards, -1, 1, name="reward-clipping")
             # `soft_asymmetric`: Negative rewards are less negative than positive rewards are positive.
             elif self.reward_clipping == "soft_asymmetric":
                 squeezed = tf.tanh(rewards / 5.0)
-                rewards = tf.where(rewards < 0.0, 0.3 * squeezed, squeezed) * 5.0
+                rewards = tf.compat.v1.where(rewards < 0.0, 0.3 * squeezed, squeezed) * 5.0
 
             # Let the v-trace  helper function calculate the v-trace values (vs) and the pg-advantages
             # (already multiplied by rho_t_pg): A = rho_t_pg * (rt + gamma*vt - V(t)).
@@ -168,7 +168,7 @@ class IMPALALossFunction(LossFunction):
             if get_rank(rewards) == 2:
                 rewards = tf.expand_dims(rewards, axis=-1)
             vs, pg_advantages = self.v_trace_function.calc_v_trace_values(
-                logits_actions_pi, tf.log(action_probs_mu), actions, actions_flat, discounts, rewards, values,
+                logits_actions_pi, tf.math.log(action_probs_mu), actions, actions_flat, discounts, rewards, values,
                 bootstrapped_values
             )
 

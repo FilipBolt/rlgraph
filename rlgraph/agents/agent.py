@@ -299,7 +299,7 @@ class Agent(Specifiable):
                 DataOp: no_op() or identity(other_step_op) in tf, None in pytorch.
             """
             if get_backend() == "tf":
-                add_op = tf.assign_add(self.graph_executor.global_training_timestep, 1)
+                add_op = tf.compat.v1.assign_add(self.graph_executor.global_training_timestep, 1)
                 op_list = [add_op] + [other_step_op] if other_step_op is not None else []
                 with tf.control_dependencies(op_list):
                     if other_step_op is None or hasattr(other_step_op, "type") and other_step_op.type == "NoOp":
@@ -317,7 +317,7 @@ class Agent(Specifiable):
         @rlgraph_api(component=self.root_component)
         def _graph_fn_update_global_timestep(root, increment):
             if get_backend() == "tf":
-                add_op = tf.assign_add(self.graph_executor.global_timestep, increment)
+                add_op = tf.compat.v1.assign_add(self.graph_executor.global_timestep, increment)
                 return add_op
             elif get_backend() == "pytorch":
                 # If we are in build phase, don't do anything here.
@@ -332,7 +332,7 @@ class Agent(Specifiable):
         @rlgraph_api(component=self.root_component)
         def _graph_fn_set_episode_reward(root, episode_reward):
             if get_backend() == "tf":
-                return tf.assign(root.episode_reward, episode_reward)
+                return tf.compat.v1.assign(root.episode_reward, episode_reward)
             elif get_backend() == "pytorch":
                 root.episode_reward = episode_reward
                 return None

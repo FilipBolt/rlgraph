@@ -462,7 +462,7 @@ class Policy(Component):
                 (deterministic is True or (isinstance(deterministic, np.ndarray) and deterministic)):
             action = self._graph_fn_get_deterministic_action_wo_distribution(parameters)
             if get_backend() == "tf":
-                log_prob_or_likelihood = tf.log(tf.reduce_max(tf.nn.softmax(parameters, axis=-1), axis=-1))
+                log_prob_or_likelihood = tf.math.log(tf.reduce_max(tf.nn.softmax(parameters, axis=-1), axis=-1))
             elif get_backend() == "pytorch":
                 log_prob_or_likelihood = torch.log(torch.max(torch.softmax(parameters, dim=-1), dim=-1)[0])
         # Bernoulli: Sigmoid derived p must be larger 0.5.
@@ -472,7 +472,7 @@ class Policy(Component):
             # Bernoulli distributions are still probs).
             if get_backend() == "tf":
                 action = tf.greater(parameters, 0.5)
-                log_prob_or_likelihood = tf.log(tf.where(parameters > 0.5, parameters, 1.0 - parameters))
+                log_prob_or_likelihood = tf.math.log(tf.compat.v1.where(parameters > 0.5, parameters, 1.0 - parameters))
             elif get_backend() == "pytorch":
                 action = torch.gt(parameters, 0.5)
                 log_prob_or_likelihood = torch.log(torch.where(parameters > 0.5, parameters, 1.0 - parameters))

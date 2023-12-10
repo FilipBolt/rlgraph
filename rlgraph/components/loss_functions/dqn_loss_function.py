@@ -170,7 +170,7 @@ class DQNLossFunction(LossFunction):
             # Ignore Q(s'a') values if s' is a terminal state. Instead use 0.0 as the state-action value for s'a'.
             # Note that in that case, the next_state (s') is not the correct next state and should be disregarded.
             # See Chapter 3.4 in "RL - An Introduction" (2017 draft) by A. Barto and R. Sutton for a detailed analysis.
-            qt_sp_ap_values = tf.where(
+            qt_sp_ap_values = tf.compat.v1.where(
                 condition=terminals, x=tf.zeros_like(qt_sp_ap_values), y=qt_sp_ap_values
             )
 
@@ -302,7 +302,7 @@ class DQNLossFunction(LossFunction):
                 return 0.5 * np.square(x=td_delta)
         elif get_backend() == "tf":
             if self.huber_loss:
-                return tf.where(
+                return tf.compat.v1.where(
                     condition=tf.abs(x=td_delta) <= self.huber_delta,
                     x=0.5 * tf.square(x=td_delta),
                     y=self.huber_delta * (tf.abs(x=td_delta) - 0.5 * self.huber_delta)

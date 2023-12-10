@@ -89,15 +89,15 @@ class StringToHashBucket(StringLayer):
         """
         if get_backend() == "tf":
             # Split the input string.
-            split_text_inputs = tf.string_split(source=text_inputs, delimiter=self.delimiter)
+            split_text_inputs = tf.compat.v1.string_split(source=text_inputs, delimiter=self.delimiter)
             # Build a tensor of n rows (number of items in text_inputs) words with
-            dense = tf.sparse_tensor_to_dense(sp_input=split_text_inputs, default_value="")
+            dense = tf.sparse.to_dense(sp_input=split_text_inputs, default_value="")
 
             length = tf.reduce_sum(input_tensor=tf.cast(x=tf.not_equal(x=dense, y=""), dtype=tf.int32), axis=-1)
             if self.hash_function == "fast":
-                hash_bucket = tf.string_to_hash_bucket_fast(input=dense, num_buckets=self.num_hash_buckets)
+                hash_bucket = tf.strings.to_hash_bucket_fast(input=dense, num_buckets=self.num_hash_buckets)
             else:
-                hash_bucket = tf.string_to_hash_bucket_strong(input=dense,
+                hash_bucket = tf.strings.to_hash_bucket_strong(input=dense,
                                                               num_buckets=self.num_hash_buckets,
                                                               key=self.hash_keys)
 

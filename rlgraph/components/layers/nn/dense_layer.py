@@ -69,14 +69,14 @@ class DenseLayer(NNLayer):
 
         # Wrapper for backend.
         if get_backend() == "tf":
-            self.layer = tf.layers.Dense(
+            self.layer = tf.compat.v1.layers.Dense(
                 units=self.units,
                 activation=get_activation_function(self.activation, *self.activation_params),
                 kernel_initializer=self.weights_init.initializer,
                 use_bias=(self.biases_spec is not False),
-                bias_initializer=(self.biases_init.initializer or tf.zeros_initializer()),
+                bias_initializer=(self.biases_init.initializer or tf.compat.v1.zeros_initializer()),
                 trainable=(False if self.trainable is False else True),
-                _reuse=tf.AUTO_REUSE
+                _reuse=tf.compat.v1.AUTO_REUSE
             )
 
             # Now build the layer so that its variables get created.

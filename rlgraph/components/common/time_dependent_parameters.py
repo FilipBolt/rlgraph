@@ -178,8 +178,8 @@ class PolynomialDecay(TimeDependentParameter):
     def _graph_fn_get(self, time_percentage=None):
         if time_percentage is None:
             assert get_backend() == "tf"  # once more, just in case
-            return tf.train.polynomial_decay(
-                learning_rate=self.from_, global_step=tf.train.get_global_step(),
+            return tf.compat.v1.train.polynomial_decay(
+                learning_rate=self.from_, global_step=tf.compat.v1.train.get_global_step(),
                 decay_steps=self.max_time_steps,
                 end_learning_rate=self.to_,
                 power=self.power
@@ -188,7 +188,7 @@ class PolynomialDecay(TimeDependentParameter):
             if get_backend() == "tf":
                 # Get the fake current time-step from the percentage value.
                 current_timestep = self.resolution * time_percentage
-                return tf.train.polynomial_decay(
+                return tf.compat.v1.train.polynomial_decay(
                     learning_rate=self.from_, global_step=current_timestep,
                     decay_steps=self.resolution,
                     end_learning_rate=self.to_,
@@ -240,8 +240,8 @@ class ExponentialDecay(TimeDependentParameter):
     def _graph_fn_get(self, time_percentage=None):
         if time_percentage is None:
             assert get_backend() == "tf"  # once more, just in case
-            return tf.train.exponential_decay(
-                learning_rate=self.from_ - self.to_, global_step=tf.train.get_global_step(),
+            return tf.compat.v1.train.exponential_decay(
+                learning_rate=self.from_ - self.to_, global_step=tf.compat.v1.train.get_global_step(),
                 decay_steps=self.max_time_steps,
                 decay_rate=self.decay_rate
             ) + self.to_
@@ -249,7 +249,7 @@ class ExponentialDecay(TimeDependentParameter):
             if get_backend() == "tf":
                 # Get the fake current time-step from the percentage value.
                 current_timestep = self.resolution * time_percentage
-                return tf.train.exponential_decay(
+                return tf.compat.v1.train.exponential_decay(
                     learning_rate=self.from_ - self.to_, global_step=current_timestep,
                     decay_steps=self.resolution,
                     decay_rate=self.decay_rate

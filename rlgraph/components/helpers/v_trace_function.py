@@ -212,7 +212,7 @@ class VTraceFunction(Component):
             vs_minus_v_xs = tf.scan(
                 fn=scan_func,
                 elems=elements,
-                initializer=tf.zeros_like(tensor=tf.squeeze(bootstrapped_values, axis=0)),
+                initializer=tf.zeros_like(input=tf.squeeze(bootstrapped_values, axis=0)),
                 parallel_iterations=1,
                 back_prop=False,
                 name="v-trace-scan"

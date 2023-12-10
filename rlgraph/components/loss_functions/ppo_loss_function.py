@@ -121,7 +121,7 @@ class PPOLossFunction(LossFunction):
             for _ in range(get_rank(ratio) - 1):
                 advantages = tf.expand_dims(advantages, axis=-1)
 
-            clipped_advantages = tf.where(
+            clipped_advantages = tf.compat.v1.where(
                 condition=advantages > 0,
                 x=(1 + self.clip_ratio.get(time_percentage)) * advantages,
                 y=(1 - self.clip_ratio.get(time_percentage)) * advantages

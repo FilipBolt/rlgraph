@@ -63,7 +63,7 @@ class IterativeOptimization(Component):
         if get_backend() == "tf":
             # Compute loss once to initialize loop.
             batch_size = tf.shape(preprocessed_states)[0]
-            sample_indices = tf.random_uniform(shape=(self.sample_size,), maxval=batch_size, dtype=tf.int32)
+            sample_indices = tf.random.uniform(shape=(self.sample_size,), maxval=batch_size, dtype=tf.int32)
             sample_states = tf.gather(params=preprocessed_states, indices=sample_indices)
             sample_actions = tf.gather(params=actions, indices=sample_indices)
             sample_rewards = tf.gather(params=rewards, indices=sample_indices)
@@ -85,7 +85,7 @@ class IterativeOptimization(Component):
             def opt_body(index, step_op, loss, loss_per_item, vf_step_op, vf_loss, vf_loss_per_item):
                 with tf.control_dependencies([step_op, loss, loss_per_item, vf_step_op, vf_loss, vf_loss_per_item]):
                     batch_size = tf.shape(preprocessed_states)[0]
-                    sample_indices = tf.random_uniform(shape=(self.sample_size,), maxval=batch_size, dtype=tf.int32)
+                    sample_indices = tf.random.uniform(shape=(self.sample_size,), maxval=batch_size, dtype=tf.int32)
                     sample_states = tf.gather(params=preprocessed_states, indices=sample_indices)
                     sample_actions = tf.gather(params=actions, indices=sample_indices)
                     sample_rewards = tf.gather(params=rewards, indices=sample_indices)

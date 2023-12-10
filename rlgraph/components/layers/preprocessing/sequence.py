@@ -123,7 +123,7 @@ class Sequence(PreprocessLayer):
         if self.backend == "python" or get_backend() == "python" or get_backend() == "pytorch":
             self.index = -1
         elif get_backend() == "tf":
-            return tf.variables_initializer([self.index])
+            return tf.compat.v1.variables_initializer([self.index])
 
     @rlgraph_api(flatten_ops=True, split_ops=False)
     def _graph_fn_call(self, inputs):

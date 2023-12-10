@@ -220,7 +220,10 @@ class SACAgentComponent(Component):
         if backend == "tf":
             actions = tf.concat(actions, axis=-1)
         elif backend == "pytorch":
-            actions = torch.cat(actions, dim=-1)
+            if len(actions) == 1:
+                actions = actions[0]
+            else:
+                actions = torch.cat(actions, dim=-1)
 
         q_funcs = self._q_functions if target is False else self._target_q_functions
 
@@ -287,13 +290,14 @@ class SACAgentComponent(Component):
         if backend == "tf":
             return tf.exp(self.log_alpha)
         elif backend == "pytorch":
-            return torch.exp(self.log_alpha)
+            # import pdb; pdb.set_trace()
+            return torch.exp(torch.Tensor([self.log_alpha]))
 
     # TODO: Move this into generic AgentRootComponent.
     @graph_fn
     def _graph_fn_training_step(self, other_step_op=None):
         if self.agent is not None:
-            add_op = tf.assign_add(self.agent.graph_executor.global_training_timestep, 1)
+            add_op = tf.compat.v1.assign_add(self.agent.graph_executor.global_training_timestep, 1)
             op_list = [add_op] + [other_step_op] if other_step_op is not None else []
             with tf.control_dependencies(op_list):
                 return tf.no_op() if other_step_op is None else other_step_op
@@ -303,11 +307,11 @@ class SACAgentComponent(Component):
     @graph_fn(returns=1, requires_variable_completeness=True)
     def _graph_fn_get_should_sync(self):
         if get_backend() == "tf":
-            inc_op = tf.assign_add(self.steps_since_last_sync, 1)
+            inc_op = tf.compat.v1.assign_add(self.steps_since_last_sync, 1)
             should_sync = inc_op >= self.q_sync_spec.sync_interval
 
             def reset_op():
-                op = tf.assign(self.steps_since_last_sync, 0)
+                op = tf.compat.v1.assign(self.steps_since_last_sync, 0)
                 with tf.control_dependencies([op]):
                     return tf.no_op()
 
@@ -330,7 +334,7 @@ class SACAgentComponent(Component):
             all_dest_vars = [destination.get_variables(collections=None, custom_scope_separator="-") for destination in self._target_q_functions]
             for source_vars, dest_vars in zip(all_source_vars, all_dest_vars):
                 for (source_key, source_var), (dest_key, dest_var) in zip(sorted(source_vars.items()), sorted(dest_vars.items())):
-                    assign_ops.append(tf.assign(dest_var, tau * source_var + (1.0 - tau) * dest_var))
+                    assign_ops.append(tf.compat.v1.assign(dest_var, tau * source_var + (1.0 - tau) * dest_var))
         else:
             all_source_vars = [source.variables() for source in self._q_functions]
             for source_vars, destination in zip(all_source_vars, self._target_q_functions):
@@ -358,7 +362,7 @@ class SACAgentComponent(Component):
     @rlgraph_api
     def _graph_fn_update_global_timestep(self, increment):
         if get_backend() == "tf":
-            add_op = tf.assign_add(self.agent.graph_executor.global_timestep, increment)
+            add_op = tf.compat.v1.assign_add(self.agent.graph_executor.global_timestep, increment)
             return add_op
         elif get_backend == "pytorch":
             self.agent.graph_executor.global_timestep += increment
@@ -370,7 +374,11 @@ class SACAgentComponent(Component):
 
     @rlgraph_api
     def _graph_fn_set_episode_reward(self, episode_reward):
-        return tf.assign(self.episode_reward, episode_reward)
+        if get_backend() == "tf":
+            return tf.compat.v1.assign(self.episode_reward, episode_reward)
+        elif get_backend() == "pytorch":
+            self.episode_reward = episode_reward
+            return self.episode_reward
 
 
 class SACAgent(Agent):

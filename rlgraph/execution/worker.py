@@ -215,7 +215,7 @@ class Worker(Specifiable):
     def execute_update(self, time_percentage):
         loss = 0
         for _ in range_(self.update_steps):
-            ret = self.agent.update(time_percentage=time_percentage)
+            ret = self.agent.update()
             if isinstance(ret, tuple):
                 loss += ret[0]
             else:

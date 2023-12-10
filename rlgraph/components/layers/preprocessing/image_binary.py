@@ -65,7 +65,7 @@ class ImageBinary(PreprocessLayer):
             # Sum over the color channel.
             color_channel_sum = tf.reduce_sum(input_tensor=inputs, axis=-1, keepdims=self.keep_rank)
             # Reduce the image to only 0.0 or 1.0.
-            binary_image = tf.where(
+            binary_image = tf.compat.v1.where(
                 tf.greater(color_channel_sum, 0.0), tf.ones_like(color_channel_sum),
                 tf.zeros_like(color_channel_sum)
             )

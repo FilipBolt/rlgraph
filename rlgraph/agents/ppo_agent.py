@@ -324,7 +324,7 @@ class PPOAgent(Agent):
                     advantages = (advantages - mean) / std
 
                 def opt_body(index_, loss_, loss_per_item_, vf_loss_, vf_loss_per_item_):
-                    start = tf.random_uniform(shape=(), minval=0, maxval=batch_size, dtype=tf.int32)
+                    start = tf.random.uniform(shape=(), minval=0, maxval=batch_size, dtype=tf.int32)
                     indices = tf.range(start=start, limit=start + agent.sample_size) % batch_size
 
                     # Use `map` here in case we have container states/actions.
@@ -425,8 +425,8 @@ class PPOAgent(Agent):
                         loop_vars=init_loop_vars,
                         parallel_iterations=1
                     )
-                    root.register_summary_op(tf.summary.scalar("losses/policy_loss", loss))
-                    root.register_summary_op(tf.summary.scalar("losses/vf_loss", vf_loss))
+                    root.register_summary_op(tf.compat.v1.summary.scalar("losses/policy_loss", loss))
+                    root.register_summary_op(tf.compat.v1.summary.scalar("losses/vf_loss", vf_loss))
                     # Increase the global training step counter.
                     loss = root._graph_fn_training_step(loss)
                     return loss, loss_per_item, vf_loss, vf_loss_per_item

@@ -237,7 +237,7 @@ class MultiGpuSynchronizer(Component):
             for gpu, shard in enumerate(device_inputs):
                 assign_ops = []
                 for i, var in enumerate(self.tower_placeholders[gpu]):
-                    assign_op = tf.assign(var, shard[i])
+                    assign_op = tf.compat.v1.assign(var, shard[i])
                     assign_ops.append(assign_op)
                 per_device_assign_ops.append(tf.group(*assign_ops, name="load-placeholders-gpu{}".format(gpu)))
 

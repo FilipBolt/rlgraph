@@ -223,7 +223,7 @@ class RingBuffer(Memory):
             # End index is just the pointer to the most recent episode.
             limit = self.episode_indices[stored_episodes - 1]
 
-            limit += tf.where(condition=(start < limit), x=0, y=self.capacity - 1)
+            limit += tf.compat.v1.where(condition=(start < limit), x=0, y=self.capacity - 1)
             # limit = tf.Print(limit, [stored_episodes, start, limit], summarize=100, message="start | limit")
             indices = tf.range(start=start, limit=limit + 1) % self.capacity
             return self._read_records(indices=indices)

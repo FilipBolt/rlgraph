@@ -86,12 +86,12 @@ class DecayComponent(Component):
             shape = tf.shape(time_step)
             # time_step comes in as a time-sequence of time-steps.
             if shape.shape[0] > 0:
-                return tf.where(
+                return tf.compat.v1.where(
                     condition=smaller_than_start,
                     # We are still in pre-decay time.
                     x=tf.tile(tf.constant([self.from_]), multiples=shape),
                     # We are past pre-decay time.
-                    y=tf.where(
+                    y=tf.compat.v1.where(
                         condition=(time_step >= self.start_timestep + self.num_timesteps),
                         # We are in post-decay time.
                         x=tf.tile(tf.constant([self.to_]), multiples=shape),

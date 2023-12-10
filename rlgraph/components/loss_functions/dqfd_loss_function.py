@@ -104,7 +104,7 @@ class DQFDLossFunction(DQNLossFunction):
 
             # Calculate the demo-loss.
             #  J_E(Q) = max_a([Q(s, a_taken) + l(s, a_expert, a_taken)] - Q(s, a_expert)
-            mask = tf.ones_like(tensor=one_hot, dtype=tf.float32)
+            mask = tf.ones_like(input=one_hot, dtype=tf.float32)
             action_mask = mask - one_hot
 
             # Margin mask: allow custom per-sample expert margins -> requires creating a margin matrix.

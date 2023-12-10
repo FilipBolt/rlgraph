@@ -56,7 +56,7 @@ class Softmax(Component):
             # Discrete actions.
             probabilities = tf.maximum(x=tf.nn.softmax(logits=logits, axis=-1), y=SMALL_NUMBER)
             # Log probs.
-            log_probs = tf.log(x=probabilities)
+            log_probs = tf.math.log(x=probabilities)
             return probabilities, log_probs
 
         elif get_backend() == "pytorch":

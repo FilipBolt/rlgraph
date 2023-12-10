@@ -63,14 +63,19 @@ class SquashedNormalDistributionAdapter(ActionAdapter):
             sd._batch_rank = 0
 
         elif get_backend() == "pytorch":
-            mean, log_sd = torch.split(adapter_outputs, split_size_or_sections=2, dim=1)
+            if len(adapter_outputs.flatten()) == 2:
+                mean, log_sd = adapter_outputs
+            else:
+                mean, log_sd = torch.split(
+                    adapter_outputs, split_size_or_sections=2, dim=-1
+                )
 
             # If action_space is 0D, we have to squeeze the params by 1 dim to make them match our action_space.
-            if full_action_space_rank != len(list(mean.size)):
-                # Assume a difference by exactly 1 dim.
-                assert len(list(mean.size)) == full_action_space_rank + 1
-                mean = torch.squeeze(mean, dim=-1)
-                log_sd = torch.squeeze(log_sd, dim=-1)
+            # if full_action_space_rank != len(list(mean.shape)):
+            #     # Assume a difference by exactly 1 dim.
+            #     assert len(list(mean.shape)) == full_action_space_rank + 1
+            #     mean = torch.squeeze(mean, dim=-1)
+            #     log_sd = torch.squeeze(log_sd, dim=-1)
 
             log_sd = torch.clamp(log_sd, min=MIN_LOG_STDDEV, max=MAX_LOG_STDDEV)
 

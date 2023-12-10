@@ -218,13 +218,13 @@ class TestAPIMethods(unittest.TestCase):
 
         @graph_fn(component=container)
         def _graph_fn_sum(self_, *inputs):
-            summary_op = tf.summary.histogram("summary_sum", inputs)
+            summary_op = tf.compat.v1.summary.histogram("summary_sum", inputs)
             self_.register_summary_op(summary_op)
             return sum(inputs)
 
         @rlgraph_api(component=container)
         def _graph_fn_graph_api(self_):
-            summary_op = tf.summary.scalar("summary_graph_api", 1.0)
+            summary_op = tf.compat.v1.summary.scalar("summary_graph_api", 1.0)
             self_.register_summary_op(summary_op)
             return tf.constant(1.0)
 
@@ -250,9 +250,9 @@ class TestAPIMethods(unittest.TestCase):
 
         @graph_fn(component=container)
         def _graph_fn_inc(self_, value):
-            summary_op = tf.summary.scalar("summary_inc", value)
+            summary_op = tf.compat.v1.summary.scalar("summary_inc", value)
             self_.register_summary_op(summary_op)
-            assign_op = tf.assign_add(test.graph_executor.global_training_timestep, 1)
+            assign_op = tf.compat.v1.assign_add(test.graph_executor.global_training_timestep, 1)
             with tf.control_dependencies([assign_op]):
                 return value + 1
 

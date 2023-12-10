@@ -94,7 +94,7 @@ class EpsilonExploration(Component):
         if get_backend() == "tf":
             shape = tf.shape(sample)
             batch_time_shape = (shape[0],) + ((shape[1],) if self.flat_sample_space[key].has_time_rank is True else ())
-            return tf.random_uniform(shape=batch_time_shape) < decayed_value
+            return tf.random.uniform(shape=batch_time_shape) < decayed_value
         elif get_backend() == "pytorch":
             if sample.dim() == 0:
                 sample = sample.unsqueeze(-1)

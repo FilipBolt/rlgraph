@@ -59,8 +59,8 @@ class Normalize(PreprocessLayer):
         if get_backend() == "tf":
             # Iteratively reduce dimensionality across all axes to get the min/max values for each sample in the batch.
             for axis in self.axes:
-                min_value = tf.reduce_min(input_tensor=min_value, axis=axis, keep_dims=True)
-                max_value = tf.reduce_max(input_tensor=max_value, axis=axis, keep_dims=True)
+                min_value = tf.reduce_min(input_tensor=min_value, axis=axis, keepdims=True)
+                max_value = tf.reduce_max(input_tensor=max_value, axis=axis, keepdims=True)
         elif get_backend() == "pytorch":
             for axis in self.axes:
                 min_value = torch.min(min_value, axis)

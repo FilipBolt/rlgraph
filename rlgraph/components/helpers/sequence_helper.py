@@ -313,7 +313,7 @@ class SequenceHelper(Component):
                                     dynamic_size=False, clear_after_read=False, name="bootstrap-deltas")
 
             # Boot-strap with 0 only if terminals[i] and sequence_indices[i] are both true.
-            boot_strap_zeros = tf.where(
+            boot_strap_zeros = tf.compat.v1.where(
                 condition=tf.logical_and(sequence_indices, terminals),
                 x=tf.ones_like(sequence_indices),
                 y=tf.zeros_like(sequence_indices),
@@ -327,7 +327,7 @@ class SequenceHelper(Component):
                 # If true terminal, append 0. Otherwise, append boot-strap val -> last observed val.
                 bootstrap_value = tf.cond(
                     pred=tf.equal(boot_strap_zeros[index], tf.ones_like(sequence_indices[index])),
-                    true_fn=lambda: tf.zeros_like(tensor=values[index], dtype=tf.float32),
+                    true_fn=lambda: tf.zeros_like(values[index], dtype=tf.float32),
                     false_fn=lambda: values[index],
                 )
 

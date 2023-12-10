@@ -125,7 +125,7 @@ class GradientDescentOptimizer(LocalOptimizer):
 
     def create_variables(self, input_spaces, action_space=None):
         if get_backend() == "tf":
-            self.optimizer = tf.train.GradientDescentOptimizer(
+            self.optimizer = tf.compat.v1.train.GradientDescentOptimizer(
                 learning_rate=self.learning_rate.placeholder()
             )
         elif get_backend() == "pytorch":
@@ -147,7 +147,7 @@ class AdamOptimizer(LocalOptimizer):
 
     def check_input_spaces(self, input_spaces, action_space=None):
         if get_backend() == "tf":
-            self.optimizer = tf.train.AdamOptimizer(
+            self.optimizer = tf.compat.v1.train.AdamOptimizer(
                 learning_rate=self.learning_rate.placeholder(),
                 beta1=self.beta1,
                 beta2=self.beta2
@@ -178,7 +178,7 @@ class NadamOptimizer(LocalOptimizer):
 
     def check_input_spaces(self, input_spaces, action_space=None):
         if get_backend() == "tf":
-            self.optimizer = tf.keras.optimizers.Nadam(
+            self.optimizer = tf.keras.optimizers.legacy.Nadam(
                 lr=self.learning_rate.placeholder(),
                 beta_1=self.beta1,
                 beta_2=self.beta2,
@@ -206,7 +206,7 @@ class AdagradOptimizer(LocalOptimizer):
 
     def check_input_spaces(self, input_spaces, action_space=None):
         if get_backend() == "tf":
-            self.optimizer = tf.train.AdagradOptimizer(
+            self.optimizer = tf.compat.v1.train.AdagradOptimizer(
                 learning_rate=self.learning_rate.placeholder(),
                 initial_accumulator_value=self.initial_accumulator_value
             )
@@ -234,7 +234,7 @@ class AdadeltaOptimizer(LocalOptimizer):
 
     def check_input_spaces(self, input_spaces, action_space=None):
         if get_backend() == "tf":
-            self.optimizer = tf.train.AdadeltaOptimizer(
+            self.optimizer = tf.compat.v1.train.AdadeltaOptimizer(
                 learning_rate=self.learning_rate.placeholder(),
                 rho=self.rho
             )
@@ -263,7 +263,7 @@ class SGDOptimizer(LocalOptimizer):
 
     def check_input_spaces(self, input_spaces, action_space=None):
         if get_backend() == "tf":
-            self.optimizer = tf.keras.optimizers.SGD(
+            self.optimizer = tf.keras.optimizers.legacy.SGD(
                 lr=self.learning_rate.placeholder(),
                 momentum=self.momentum,
                 decay=self.decay,
@@ -297,7 +297,7 @@ class RMSPropOptimizer(LocalOptimizer):
 
     def check_input_spaces(self, input_spaces, action_space=None):
         if get_backend() == "tf":
-            self.optimizer = tf.train.RMSPropOptimizer(
+            self.optimizer = tf.compat.v1.train.RMSPropOptimizer(
                 learning_rate=self.learning_rate,
                 decay=self.decay,
                 momentum=self.momentum,

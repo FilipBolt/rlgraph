@@ -57,6 +57,7 @@ distributed_compatible_backends = dict(
 
 
 config_file = os.path.expanduser(os.path.join(rlgraph_dir, 'rlgraph.json'))
+print("HELO", config_file)
 if os.path.exists(config_file):
     try:
         with open(config_file) as f:
